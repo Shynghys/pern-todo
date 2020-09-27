@@ -2,6 +2,9 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const pool = require("./db");
+// var DATA = path.join();
+
+var PER_PAGE = 10;
 
 //middleware
 app.use(cors());
@@ -27,9 +30,13 @@ app.post("/todos", async (req, res) => {
 
 //get all todos
 
+function getPaginatedItems(items, offset) {
+  return items.slice(offset, offset + PER_PAGE);
+}
 app.get("/todos", async (req, res) => {
   try {
     const allTodos = await pool.query("SELECT * FROM todo");
+    // console.log(allTodos);
     res.json(allTodos.rows);
   } catch (err) {
     console.error(err.message);
@@ -56,10 +63,10 @@ app.get("/todos/:id", async (req, res) => {
 app.put("/todos/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { description } = req.body;
+    const { description, username } = req.body;
     const updateTodo = await pool.query(
-      "UPDATE todo SET description = $1 WHERE todo_id = $2",
-      [description, id]
+      "UPDATE todo SET description = $1, username = $2 WHERE todo_id = $3",
+      [description, username, id]
     );
 
     res.json("Todo was updated!");

@@ -1,7 +1,10 @@
 import React, { Fragment, useEffect, useState } from "react";
-import ReactPaginate from "react-paginate";
-import EditTodo from "./EditTodo";
 
+import EditTodo from "./EditTodo";
+import "jquery/dist/jquery.min.js";
+import "datatables.net-dt/js/dataTables.dataTables";
+import "datatables.net-dt/css/jquery.dataTables.min.css";
+import $ from "jquery";
 const ListTodos = () => {
   const [todos, setTodos] = useState([]);
 
@@ -23,20 +26,15 @@ const ListTodos = () => {
     try {
       const response = await fetch("http://localhost:5000/todos");
       const jsonData = await response.json();
-
+      $(document).ready(function () {
+        $("#example").DataTable();
+      });
       setTodos(jsonData);
     } catch (err) {
       console.error(err.message);
     }
   };
-  const handlePageClick = (data) => {
-    let selected = data.selected;
-    let offset = Math.ceil(selected * this.props.perPage);
 
-    this.setState({ offset: offset }, () => {
-      this.loadCommentsFromServer();
-    });
-  };
   useEffect(() => {
     getTodos();
   }, []);
@@ -46,7 +44,7 @@ const ListTodos = () => {
   return (
     <Fragment>
       {" "}
-      <table className="table mt-5 text-center">
+      <table className="table mt-5 text-center" id="example">
         <thead>
           <tr>
             <th>Username</th>
@@ -80,19 +78,6 @@ const ListTodos = () => {
           ))}
         </tbody>
       </table>
-      <ReactPaginate
-        previousLabel={"previous"}
-        nextLabel={"next"}
-        breakLabel={"..."}
-        breakClassName={"break-me"}
-        // pageCount={this.state.pageCount}
-        marginPagesDisplayed={2}
-        pageRangeDisplayed={5}
-        onPageChange={this.handlePageClick}
-        containerClassName={"pagination"}
-        subContainerClassName={"pages pagination"}
-        activeClassName={"active"}
-      />
     </Fragment>
   );
 };
